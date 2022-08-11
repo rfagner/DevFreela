@@ -4,3 +4,9 @@
 <br><br>
 
 Plataforma para cadastro e contratação de serviços de freelancer de desenvolvedores
+
+Funcionalidades que serão implementadas:
+- Cadastro, Atualização, Cancelamento e Consulta de Projetos de Freelance (individuais ou lista)
+- Cadastro e Login de Usuário e de perfis Freelancer e Cliente
+- Adicionar comentários para um serviço de Freelance
+- Definir, Iniciar e finalizar o projeto
