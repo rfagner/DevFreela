@@ -21,36 +21,9 @@ namespace DevFreela.Application.Services.Implementations
         {
             _dbContext = dbContext;
             _connectionString = configuration.GetConnectionString("DevFreela");
-        }
+        }              
 
-        public int Create(NewProjectInputModel inputModel)
-        {
-            var project = new Project(inputModel.Title, inputModel.Description, inputModel.IdCliet, inputModel.IdFreelancer, inputModel.TotalCost);
-
-            _dbContext.Projects.Add(project);
-
-            _dbContext.SaveChanges();
-
-            return project.Id;
-        }
-
-        public void CreateComment(CreateCommentInputModel inputModel)
-        {
-            var comment = new ProjectComment(inputModel.Content, inputModel.IdProject, inputModel.IdUser);
-
-            _dbContext.ProjectComments.Add(comment);
-            
-            _dbContext.SaveChanges();
-
-        }
-
-        public void Delete(int id)
-        {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
-            project.Cancel();
-
-            _dbContext.SaveChanges();
-        }
+        
 
         public void Finish(int id)
         {
@@ -59,17 +32,7 @@ namespace DevFreela.Application.Services.Implementations
             project.Finish();
 
             _dbContext.SaveChanges();
-        }
-
-        public List<ProjectViewModel> GetAll(string query)
-        {
-            var projects = _dbContext.Projects;
-
-            var projectsViewModel = projects
-                .Select(p => new ProjectViewModel(p.Id, p.Title, p.CreatedAt))
-                .ToList();
-            return projectsViewModel;
-        }
+        }        
 
         public ProjectDetailsViewModel GetById(int id)
         {
@@ -112,14 +75,6 @@ namespace DevFreela.Application.Services.Implementations
             }
 
         }
-
-        public void Update(UpdateProjectInputModel inputModel)
-        {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == inputModel.Id);
-
-            project.Update(inputModel.Title, inputModel.Description, inputModel.TotalCost);
-
-            _dbContext.SaveChanges();
-        }
+       
     }
 }
