@@ -1,9 +1,7 @@
 ﻿using DevFreela.Core.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DevFreela.Core.Entities
 {
@@ -25,9 +23,9 @@ namespace DevFreela.Core.Entities
         public string Title { get; private set; }
         public string Description { get; private set; }
         public int IdClient { get; private set; }
-        public User Client { get; set; }
+        public User Client { get; private set; }
         public int IdFreelancer { get; private set; }
-        public User Freelancer { get; set; }
+        public User Freelancer { get; private set; }
         public decimal TotalCost { get; private set; }
         public DateTime CreatedAt { get; private set; }
         public DateTime? StartedAt { get; private set; }
@@ -37,30 +35,34 @@ namespace DevFreela.Core.Entities
 
         public void Cancel()
         {
-            if(Status == ProjectStatusEnum.InProgress || Status == ProjectStatusEnum.InProgress)
+            if (Status == ProjectStatusEnum.InProgress || Status == ProjectStatusEnum.InProgress)
             {
                 Status = ProjectStatusEnum.Cancelled;
             }
-            
         }
 
         public void Start()
         {
-            if(Status == ProjectStatusEnum.Created)
+            if (Status == ProjectStatusEnum.Created)
             {
                 Status = ProjectStatusEnum.InProgress;
                 StartedAt = DateTime.Now;
             }
-            
         }
 
         public void Finish()
         {
-            if(Status == ProjectStatusEnum.InProgress)
+            if (Status == ProjectStatusEnum.PaymentPending)
             {
                 Status = ProjectStatusEnum.Finished;
                 FinishedAt = DateTime.Now;
             }
+        }
+
+        public void SetPaymentPending()
+        {
+            Status = ProjectStatusEnum.PaymentPending;
+            FinishedAt = null;
         }
 
         public void Update(string title, string description, decimal totalCost)
@@ -69,6 +71,5 @@ namespace DevFreela.Core.Entities
             Description = description;
             TotalCost = totalCost;
         }
-        
     }
 }
