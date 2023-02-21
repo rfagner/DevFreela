@@ -1,7 +1,7 @@
 ﻿using DevFreela.Core.Enums;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DevFreela.Core.Entities
 {
@@ -14,7 +14,6 @@ namespace DevFreela.Core.Entities
             IdClient = idClient;
             IdFreelancer = idFreelancer;
             TotalCost = totalCost;
-
             CreatedAt = DateTime.Now;
             Status = ProjectStatusEnum.Created;
             Comments = new List<ProjectComment>();
@@ -26,7 +25,10 @@ namespace DevFreela.Core.Entities
         public User Client { get; private set; }
         public int IdFreelancer { get; private set; }
         public User Freelancer { get; private set; }
+
+        [Column(TypeName = "decimal(18,4)")]
         public decimal TotalCost { get; private set; }
+
         public DateTime CreatedAt { get; private set; }
         public DateTime? StartedAt { get; private set; }
         public DateTime? FinishedAt { get; private set; }
@@ -35,9 +37,18 @@ namespace DevFreela.Core.Entities
 
         public void Cancel()
         {
-            if (Status == ProjectStatusEnum.InProgress || Status == ProjectStatusEnum.InProgress)
+            if (Status == ProjectStatusEnum.Created || Status == ProjectStatusEnum.InProgress)
             {
                 Status = ProjectStatusEnum.Cancelled;
+            }
+        }
+
+        public void Finish()
+        {
+            if (Status == ProjectStatusEnum.InProgress)
+            {
+                Status = ProjectStatusEnum.Finished;
+                FinishedAt = DateTime.Now;
             }
         }
 
@@ -50,26 +61,16 @@ namespace DevFreela.Core.Entities
             }
         }
 
-        public void Finish()
-        {
-            if (Status == ProjectStatusEnum.PaymentPending)
-            {
-                Status = ProjectStatusEnum.Finished;
-                FinishedAt = DateTime.Now;
-            }
-        }
-
         public void SetPaymentPending()
         {
-            Status = ProjectStatusEnum.PaymentPending;
-            FinishedAt = null;
+            Status = ProjectStatusEnum.Pending;
         }
 
         public void Update(string title, string description, decimal totalCost)
         {
-            Title = title;
-            Description = description;
-            TotalCost = totalCost;
+            this.Title = title;
+            this.Description = description;
+            this.TotalCost = totalCost;
         }
     }
 }

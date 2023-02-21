@@ -1,12 +1,6 @@
 ﻿using DevFreela.Core.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevFreela.Infrastructure.Persistence.Configurations
 {
@@ -15,18 +9,23 @@ namespace DevFreela.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Project> builder)
         {
             builder
-            .HasKey(p => p.Id);
+             .ToTable("Projects")
+            .HasKey(project => project.Id);
 
             builder
-                .HasOne(p => p.Client)
-                .WithMany(f => f.OwnedProjects)
-                .HasForeignKey(p => p.IdClient)
-                .OnDelete(DeleteBehavior.Restrict);
+             .Property(p => p.TotalCost)
+             .HasColumnType("decimal(18,4)");
 
             builder
                 .HasOne(p => p.Freelancer)
                 .WithMany(f => f.FreelanceProjects)
                 .HasForeignKey(p => p.IdFreelancer)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                 .HasOne(p => p.Client)
+                .WithMany(c => c.OwnedProjects)
+                .HasForeignKey(p => p.IdClient)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

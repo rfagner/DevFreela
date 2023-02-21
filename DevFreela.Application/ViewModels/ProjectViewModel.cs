@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DevFreela.Application.ViewModels
 {
     public class ProjectViewModel
     {
-        public ProjectViewModel(int id, string title, DateTime createdAt)
+        public ProjectViewModel(int Id, string title, DateTime createdAt)
         {
-            Id = id;
+            Id = Id;
             Title = title;
             CreatedAt = createdAt;
         }

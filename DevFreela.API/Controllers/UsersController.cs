@@ -1,20 +1,23 @@
-﻿using DevFreela.API.Models;
-using DevFreela.Application.Commands.CreateUser;
-using DevFreela.Application.Commands.LoginUser;
+﻿using DevFreela.Application.Commands.LoginUser;
+using DevFreela.Application.InputModels;
 using DevFreela.Application.Queries.GetUser;
+using DevFreela.Application.Services.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevFreela.API.Controllers
 {
     [Route("api/users")]
+    [Authorize]
     public class UsersController : ControllerBase
     {
+        private readonly IUserService _userService;
         private readonly IMediator _mediator;
-        public UsersController(IMediator mediator)
+        public UsersController(IUserService userService, IMediator mediator)
         {
+            _userService = userService;
             _mediator = mediator;
         }
 
@@ -22,9 +25,9 @@ namespace DevFreela.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var query = new GetUserQuery(id);
+            var getUserById = new GetUserById(id);
 
-            var user = await _mediator.Send(query);
+            var user = await _mediator.Send(getUserById);
 
             if (user == null)
             {
@@ -36,31 +39,28 @@ namespace DevFreela.API.Controllers
 
         // api/users
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CreateUserCommand command)
+        [AllowAnonymous]
+        public async Task<IActionResult> Post([FromBody] CreateUserInputModel inputModel)
         {
-            
-            var id = await _mediator.Send(command);
+            var id = await _userService.CreateAsync(inputModel);
 
-            return CreatedAtAction(nameof(GetById), new { id = id }, command);
+            return CreatedAtAction(nameof(GetById), new { id = id }, inputModel);
         }
 
-        // teste@email.com"
-        // Senha Usuario de Teste "Abcd10@#$"
-        //Teste2023@#$
-        // api/users/1/login
-        [HttpPut("login")]
+        // api/users/login
+        [HttpPut("/login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
         {
-            var loginUserViewModel = await _mediator.Send(command);
+            var loginUserViewMovel = await _mediator.Send(command);
 
-            if (loginUserViewModel == null)
+            if (loginUserViewMovel == null)
             {
                 return BadRequest();
             }
 
-            return Ok(loginUserViewModel);
-            
-            
+            return Ok(loginUserViewMovel);
+
         }
     }
 }

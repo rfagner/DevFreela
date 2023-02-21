@@ -1,19 +1,15 @@
 ﻿using DevFreela.Application.InputModels;
-using DevFreela.Application.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using DevFreela.Core.DTO;
 using System.Threading.Tasks;
 
 namespace DevFreela.Application.Services.Interfaces
 {
     public interface IProjectService
     {
-        ProjectDetailsViewModel GetById(int id);     
-         
+        void Update(UpdateProjectInputModel inputModel);
         void Start(int id);
-        void Finish(int id);        
+        Task<bool> Finish(PaymentInfoDTO paymentInfoDTO);
+        Task FinishMessageBus(PaymentInfoDTO paymentInfoDTO);
 
     }
 }

@@ -1,80 +1,68 @@
-﻿using Dapper;
-using DevFreela.Application.InputModels;
+﻿using DevFreela.Application.InputModels;
 using DevFreela.Application.Services.Interfaces;
-using DevFreela.Application.ViewModels;
-using DevFreela.Core.Entities;
+using DevFreela.Core.DTO;
+using DevFreela.Core.Services;
 using DevFreela.Infrastructure.Persistence;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace DevFreela.Application.Services.Implementations
 {
     public class ProjectService : IProjectService
     {
         private readonly DevFreelaDbContext _dbContext;
-        private readonly string _connectionString;
-        public ProjectService(DevFreelaDbContext dbContext, IConfiguration configuration)
+        private readonly IPaymentService _paymentService;
+        public ProjectService(DevFreelaDbContext dbContext, IPaymentService paymentService)
         {
             _dbContext = dbContext;
-            _connectionString = configuration.GetConnectionString("DevFreela");
-        }              
+            _paymentService = paymentService;
+        }
 
-        
-
-        public void Finish(int id)
+        public async Task<bool> Finish(PaymentInfoDTO paymentInfoDTO)
         {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+            var project = _dbContext.Projects.SingleOrDefault(projectDb => projectDb.Id == paymentInfoDTO.IdProejct);
 
             project.Finish();
 
-            _dbContext.SaveChanges();
-        }        
+            var result = await _paymentService.ProcessPayment(paymentInfoDTO);
 
-        public ProjectDetailsViewModel GetById(int id)
+            if (!result)
+            {
+                project.SetPaymentPending();
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return result;
+        }
+
+        public async Task FinishMessageBus(PaymentInfoDTO paymentInfoDTO)
         {
-            var project = _dbContext.Projects
-                .Include(p => p.Client)
-                .Include(p => p.Freelancer)
-                .SingleOrDefault(p => p.Id == id);
+            var project = _dbContext.Projects.SingleOrDefault(projectDb => projectDb.Id == paymentInfoDTO.IdProejct);
 
-            if (project == null) return null;
+            _paymentService.ProcessPaymentMessageBus(paymentInfoDTO);
 
-            var projectDetailsViewModel = new ProjectDetailsViewModel(
-                project.Id,
-                project.Title,
-                project.Description,
-                project.TotalCost,
-                project.StartedAt,
-                project.FinishedAt,
-                project.Client.FullName,
-                project.Freelancer.FullName
-                );
+            project.SetPaymentPending();
 
-            return projectDetailsViewModel;
+            await _dbContext.SaveChangesAsync();
         }
 
         public void Start(int id)
         {
-            var project = _dbContext.Projects.SingleOrDefault(p => p.Id == id);
+            var project = _dbContext.Projects.SingleOrDefault(projectDb => projectDb.Id == id);
 
             project.Start();
 
-            //_dbContext.SaveChanges();
-
-            using (var sqlConnection = new SqlConnection(_connectionString))
-            {
-                sqlConnection.Open();
-
-                var script = "UPDATE Projects SET Status = @status, StartedAt = @startedat WHERE Id = @id";
-
-                sqlConnection.Execute(script, new { status = project.Status, startedat = project.StartedAt, id});
-            }
-
+            _dbContext.SaveChanges();
         }
-       
+
+        public void Update(UpdateProjectInputModel inputModel)
+        {
+            var project = _dbContext.Projects.SingleOrDefault(projectDb => projectDb.Id == inputModel.Id);
+
+            project.Update(inputModel.Title, inputModel.Description, inputModel.TotalCost);
+
+            _dbContext.SaveChanges();
+        }
     }
 }

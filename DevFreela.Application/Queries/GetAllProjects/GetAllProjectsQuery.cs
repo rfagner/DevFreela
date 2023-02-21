@@ -12,5 +12,6 @@ namespace DevFreela.Application.Queries.GetAllProjects
         }
 
         public string Query { get; private set; }
+
     }
 }
