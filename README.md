@@ -53,16 +53,6 @@ Antes de começar, você vai precisar ter instalado em sua máquina as seguintes
 [RabbitMQ](https://www.rabbitmq.com/), [.Net core](https://dotnet.microsoft.com/en-us/download/dotnet/5.0).
 Além disto é bom ter um editor para trabalhar com o código como [VSCode](https://code.visualstudio.com/), [Visuall Studio](https://visualstudio.microsoft.com/pt-br/downloads/)
 
-
----
-
-## ❌Problemas encontrados
-- RabbitMQ failed to start, TCP connection succeeded but Erlang distribution failed
-
-  Solução: https://stackoverflow.com/questions/47874958/rabbitmq-failed-to-start-tcp-connection-succeeded-but-erlang-distribution-faile
- 
----
-
 ## 🛠 Tecnologias
 
 - **[.NET](https://dotnet.microsoft.com/en-us/)**
