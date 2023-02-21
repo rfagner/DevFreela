@@ -1,9 +1,6 @@
 ﻿using DevFreela.Core.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Xml;
 
 namespace DevFreela.Infrastructure.Persistence
 {
@@ -11,7 +8,7 @@ namespace DevFreela.Infrastructure.Persistence
     {
         public DevFreelaDbContext(DbContextOptions<DevFreelaDbContext> options) : base(options)
         {
-            
+
         }
         public DbSet<Project> Projects { get; set; }
         public DbSet<User> Users { get; set; }
@@ -19,10 +16,11 @@ namespace DevFreela.Infrastructure.Persistence
         public DbSet<UserSkill> UserSkills { get; set; }
         public DbSet<ProjectComment> ProjectComments { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());          
-
-        }   
+            // adiciona todas as referências que utilizam como extensão a IEntityTypeConfiguration 
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        }
     }
 }

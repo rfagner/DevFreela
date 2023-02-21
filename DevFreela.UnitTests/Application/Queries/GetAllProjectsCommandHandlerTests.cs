@@ -2,10 +2,7 @@
 using DevFreela.Core.Entities;
 using DevFreela.Core.Repositories;
 using Moq;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -20,13 +17,13 @@ namespace DevFreela.UnitTests.Application.Queries
             // Arrange
             var projects = new List<Project>
             {
-                new Project("Nome do teste 1", "Descrição do teste 1", 1, 2, 10000),
-                new Project("Nome do teste 2", "Descrição do teste 2", 1, 2, 20000),
-                new Project("Nome do teste 3", "Descrição do teste 3", 1, 2, 30000)
+                new Project("Nome do teste 1", "Descrição de teste 1", 1, 2, 1000),
+                new Project("Nome do teste 2", "Descrição de teste 2", 1, 2, 2000),
+                new Project("Nome do teste 3", "Descrição de teste 3", 1, 2, 3000)
             };
 
             var projectRepositoryMock = new Mock<IProjectRepository>();
-            projectRepositoryMock.Setup(pr => pr.GetAllAsync().Result).Returns(projects);
+            projectRepositoryMock.Setup(pr => pr.GetAllProjectsAsync().Result).Returns(projects);
 
             var getAllProjectsQuery = new GetAllProjectsQuery("");
             var getAllProjectsQueryHandler = new GetAllProjectsQueryHandler(projectRepositoryMock.Object);
@@ -39,7 +36,8 @@ namespace DevFreela.UnitTests.Application.Queries
             Assert.NotEmpty(projectViewModelList);
             Assert.Equal(projects.Count, projectViewModelList.Count);
 
-            projectRepositoryMock.Verify(pr => pr.GetAllAsync().Result, Times.Once);
+            projectRepositoryMock.Verify(pr => pr.GetAllProjectsAsync().Result, Times.Once());
+
         }
     }
 }

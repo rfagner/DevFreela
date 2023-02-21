@@ -1,40 +1,29 @@
 ﻿using DevFreela.Application.InputModels;
 using DevFreela.Application.Services.Interfaces;
-using DevFreela.Application.ViewModels;
 using DevFreela.Core.Entities;
-using DevFreela.Infrastructure.Persistence;
-using System.Linq;
+using DevFreela.Core.Repositories;
+using DevFreela.Core.Service;
+using System.Threading.Tasks;
 
 namespace DevFreela.Application.Services.Implementations
 {
     public class UserService : IUserService
     {
-        private readonly DevFreelaDbContext _dbContext;
-        public UserService(DevFreelaDbContext dbContext)
+        private readonly IUserRepository _userRepository;
+        private readonly IAuthService _authService;
+        public UserService(IUserRepository userRepository, IAuthService authService)
         {
-            _dbContext = dbContext;
+            _userRepository = userRepository;
+            _authService = authService;
         }
 
-        public int Create(CreateUserInputModel inputModel)
+        public async Task<int> CreateAsync(CreateUserInputModel inputModel)
         {
-            var user = new User(inputModel.FullName, inputModel.Email, inputModel.BirthDate, inputModel.Password, inputModel.Role);
+            var passwordHash = _authService.ComputeSha256Hash(inputModel.Password);
 
-            _dbContext.Users.Add(user);
-            _dbContext.SaveChanges();
+            var user = new User(inputModel.FullName, inputModel.Email, inputModel.BirthDate, passwordHash, inputModel.Role);
 
-            return user.Id;
-        }
-
-        public UserViewModel GetUser(int id)
-        {
-            var user = _dbContext.Users.SingleOrDefault(u => u.Id == id);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            return new UserViewModel(user.FullName, user.Email);
+            return await _userRepository.CreateUserAsync(user);
         }
     }
 }
