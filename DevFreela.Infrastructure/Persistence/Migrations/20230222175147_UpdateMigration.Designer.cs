@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DevFreela.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(DevFreelaDbContext))]
-    [Migration("20210811025031_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20230222175147_UpdateMigration")]
+    partial class UpdateMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -53,7 +53,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalCost")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,4)");
 
                     b.HasKey("Id");
 
@@ -130,6 +130,12 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

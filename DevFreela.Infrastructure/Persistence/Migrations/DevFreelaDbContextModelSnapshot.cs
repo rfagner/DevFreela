@@ -51,7 +51,7 @@ namespace DevFreela.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalCost")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,4)");
 
                     b.HasKey("Id");
 

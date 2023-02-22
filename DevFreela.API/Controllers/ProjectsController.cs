@@ -50,7 +50,7 @@ namespace DevFreela.API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "client")]
-        public async Task<IActionResult> Post([FromBody] CreateProjectCommand command, IMediator mediator)
+        public async Task<IActionResult> Post([FromBody] CreateProjectCommand command) //, IMediator mediator Colocar após o command
         {
             var id = await _mediator.Send(command);
 
