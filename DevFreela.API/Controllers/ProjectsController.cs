@@ -1,84 +1,72 @@
-﻿using DevFreela.API.Models;
-using DevFreela.Application.Commands.CreateComment;
+﻿using DevFreela.Application.Commands.CreateComment;
 using DevFreela.Application.Commands.CreateProject;
 using DevFreela.Application.Commands.DeleteProject;
-using DevFreela.Application.InputModels;
+using DevFreela.Application.Commands.FinishProject;
+using DevFreela.Application.Commands.Start;
+using DevFreela.Application.Commands.UpdateProject;
 using DevFreela.Application.Queries.GetAllProjects;
-using DevFreela.Application.Queries.GetProjectById;
-using DevFreela.Application.Services.Interfaces;
-using DevFreela.Core.DTO;
+using DevFreela.Application.Queries.GetProjects;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 
 namespace DevFreela.API.Controllers
 {
     [Route("api/projects")]
-    [Authorize]
     public class ProjectsController : ControllerBase
     {
-        private readonly OpenignTimeOption _openignTimeOption;
-        private readonly IProjectService _projectService;
-        private readonly IMediator _mediator;
 
-        public ProjectsController(IOptions<OpenignTimeOption> options, IProjectService projectService, IMediator mediator)
+        private readonly IMediator _mediator;
+        public ProjectsController(IMediator mediator)
         {
             _mediator = mediator;
-            _projectService = projectService;
-            _openignTimeOption = options.Value;
         }
 
         [HttpGet]
-        [Authorize(Roles = "client, freelancer")]
+        [Authorize(Roles ="client, freelancer")]
         public async Task<IActionResult> Get(string query)
         {
             var getAllProjectsQuery = new GetAllProjectsQuery(query);
-
             var projects = await _mediator.Send(getAllProjectsQuery);
 
             return Ok(projects);
         }
 
+        //api/projects/id
         [HttpGet("{id}")]
         [Authorize(Roles = "client, freelancer")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var getProjectById = new GetProjectByIdQuery(id);
+            var query = new GetProjectByIdQuery(id);
 
-            var project = await _mediator.Send(getProjectById);
+            var project = await _mediator.Send(query);
 
             if (project == null)
-            {
                 return NotFound();
-            }
 
             return Ok(project);
         }
 
-
-
         [HttpPost]
         [Authorize(Roles = "client")]
-        public async Task<IActionResult> Post([FromBody] CreateProjectCommand command)
+        public async Task<IActionResult> Post([FromBody] CreateProjectCommand command, IMediator mediator)
         {
             var id = await _mediator.Send(command);
 
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = id }, command);
+            return CreatedAtAction(nameof(GetById), new { id = id }, command);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "client")]
-        public IActionResult Put(int id, [FromBody] UpdateProjectInputModel inputModel)
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateProjectCommand command)
         {
-
-            _projectService.Update(inputModel);
-
+            await _mediator.Send(command);
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        //api/projects/3
+        [HttpDelete]
         [Authorize(Roles = "client")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -94,35 +82,30 @@ namespace DevFreela.API.Controllers
         public async Task<IActionResult> PostComment(int id, [FromBody] CreateCommentCommand command)
         {
             await _mediator.Send(command);
-
             return NoContent();
         }
 
+        //api/projects/1/start
         [HttpPut("{id}/start")]
         [Authorize(Roles = "client")]
-        public IActionResult Start(int id)
+        public async Task<IActionResult> Start(int id)
         {
-            _projectService.Start(id);
+            var command = new StartProjectCommand(id);
+
+            await _mediator.Send(command);
 
             return NoContent();
         }
 
-        [HttpPut("finish")]
+        [HttpPut("{id}/finish")]
         [Authorize(Roles = "client")]
-        public IActionResult Finish([FromBody] PaymentInfoDTO paymentInfoDTOid)
+        public async Task<IActionResult> Finish(int id)
         {
-            _projectService.Finish(paymentInfoDTOid);
+            var command = new FinishProjectCommand(id);
+
+            await _mediator.Send(command);
 
             return NoContent();
-        }
-
-        [HttpPut("finishMessageBus")]
-        [Authorize(Roles = "client")]
-        public IActionResult FinishMessageBus([FromBody] PaymentInfoDTO paymentInfoDTOid)
-        {
-            _projectService.FinishMessageBus(paymentInfoDTOid);
-
-            return Accepted();
         }
     }
 }

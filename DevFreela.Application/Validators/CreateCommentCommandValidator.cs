@@ -1,5 +1,10 @@
 ﻿using DevFreela.Application.Commands.CreateComment;
 using FluentValidation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DevFreela.Application.Validators
 {
@@ -7,9 +12,13 @@ namespace DevFreela.Application.Validators
     {
         public CreateCommentCommandValidator()
         {
-            RuleFor(p => p.Content)
+            RuleFor(c => c.Content)
                 .MaximumLength(255)
-                .WithMessage("Tamanho máximo de Texto de Comentário é de 255 caracteres.");
+                .WithMessage("Tamanho máximo de 255 caracteres");
+
+            RuleFor(c => c.Content)
+                .MinimumLength(50)
+                .WithMessage("Tamanho mínimo de 50 caracteres");
         }
     }
 }

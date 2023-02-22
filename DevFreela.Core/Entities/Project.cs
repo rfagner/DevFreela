@@ -1,11 +1,13 @@
 ﻿using DevFreela.Core.Enums;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace DevFreela.Core.Entities
 {
-    public class Project : BaseEntity
+   public class Project:BaseEntity
     {
         public Project(string title, string description, int idClient, int idFreelancer, decimal totalCost)
         {
@@ -14,9 +16,9 @@ namespace DevFreela.Core.Entities
             IdClient = idClient;
             IdFreelancer = idFreelancer;
             TotalCost = totalCost;
-            CreatedAt = DateTime.Now;
-            Status = ProjectStatusEnum.Created;
+            CreateAt = DateTime.Now;
             Comments = new List<ProjectComment>();
+
         }
 
         public string Title { get; private set; }
@@ -25,21 +27,25 @@ namespace DevFreela.Core.Entities
         public User Client { get; private set; }
         public int IdFreelancer { get; private set; }
         public User Freelancer { get; private set; }
-
-        [Column(TypeName = "decimal(18,4)")]
         public decimal TotalCost { get; private set; }
-
-        public DateTime CreatedAt { get; private set; }
-        public DateTime? StartedAt { get; private set; }
+        public DateTime CreateAt { get; private set; }
+        public DateTime? StartedAt{ get; private set; }
         public DateTime? FinishedAt { get; private set; }
         public ProjectStatusEnum Status { get; private set; }
         public List<ProjectComment> Comments { get; private set; }
 
         public void Cancel()
         {
-            if (Status == ProjectStatusEnum.Created || Status == ProjectStatusEnum.InProgress)
-            {
+            if(Status==ProjectStatusEnum.InProgress)
                 Status = ProjectStatusEnum.Cancelled;
+        }
+
+        public void Start()
+        {
+            if(Status == ProjectStatusEnum.Created)
+            {
+                Status = ProjectStatusEnum.InProgress;
+                StartedAt = DateTime.Now;
             }
         }
 
@@ -52,25 +58,11 @@ namespace DevFreela.Core.Entities
             }
         }
 
-        public void Start()
-        {
-            if (Status == ProjectStatusEnum.Created)
-            {
-                Status = ProjectStatusEnum.InProgress;
-                StartedAt = DateTime.Now;
-            }
-        }
-
-        public void SetPaymentPending()
-        {
-            Status = ProjectStatusEnum.Pending;
-        }
-
         public void Update(string title, string description, decimal totalCost)
         {
-            this.Title = title;
-            this.Description = description;
-            this.TotalCost = totalCost;
+            Title = title;
+            Description = description;
+            TotalCost = totalCost;
         }
     }
 }

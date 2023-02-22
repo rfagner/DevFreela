@@ -1,10 +1,12 @@
-﻿using DevFreela.Application.Commands.LoginUser;
-using DevFreela.Application.InputModels;
+﻿using DevFreela.API.Models;
+using DevFreela.Application.Commands.CreateUser;
+using DevFreela.Application.Commands.LoginUser;
+using DevFreela.Application.Queries.GetAllUser;
 using DevFreela.Application.Queries.GetUser;
-using DevFreela.Application.Services.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DevFreela.API.Controllers
@@ -13,54 +15,54 @@ namespace DevFreela.API.Controllers
     [Authorize]
     public class UsersController : ControllerBase
     {
-        private readonly IUserService _userService;
         private readonly IMediator _mediator;
-        public UsersController(IUserService userService, IMediator mediator)
+        public UsersController(IMediator mediator)
         {
-            _userService = userService;
             _mediator = mediator;
         }
 
-        // api/users/1
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var getUserById = new GetUserById(id);
-
-            var user = await _mediator.Send(getUserById);
+            var getByIdUser = new GetByIdUserQuery(id);
+            var user = await _mediator.Send(getByIdUser);
 
             if (user == null)
-            {
                 return NotFound();
-            }
 
             return Ok(user);
         }
 
-        // api/users
+        //api/users
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Post([FromBody] CreateUserInputModel inputModel)
+        public async Task<IActionResult> Post([FromBody] CreateUserCommand command)
         {
-            var id = await _userService.CreateAsync(inputModel);
 
-            return CreatedAtAction(nameof(GetById), new { id = id }, inputModel);
+            var id = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id = 1 }, command);
         }
 
-        // api/users/login
-        [HttpPut("/login")]
+        // api/users/1/login
+        [HttpPut("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
         {
-            var loginUserViewMovel = await _mediator.Send(command);
+            var loginUserViewModel = await _mediator.Send(command);
 
-            if (loginUserViewMovel == null)
-            {
+            if (loginUserViewModel == null)
                 return BadRequest();
-            }
 
-            return Ok(loginUserViewMovel);
+            return Ok(loginUserViewModel);
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> Get(string query)
+        {
+            var getAllUsersQuery = new GetAllUsersQuery(query);
+            var users = await _mediator.Send(getAllUsersQuery);
+
+            return Ok(users);
         }
     }
 }
