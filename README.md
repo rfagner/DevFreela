@@ -10,8 +10,7 @@
  <a href="#-sobre-o-projeto">Sobre</a> •
  <a href="#-funcionalidades">Funcionalidades</a> •
  <a href="#-como-executar-o-projeto">Como executar</a> •
- <a href="#-tecnologias">Tecnologias</a> •
- <a href="#-problemas-encontrados">Problemas encontrados</a> •
+ <a href="#-tecnologias">Tecnologias</a> • 
  <a href="#user-content--licença">Licença</a>
 </p>
 
@@ -40,7 +39,6 @@ O projeto consiste em criar um backend para projetos e usuário que trabalham co
 - [X] Utilizar validações para input model
 - [X] Configurar AzurePipelien para publicação
 - [X] Criar testes
-- [X] Utilizar RabbitMQ para pagamentos
 
 
 ---
@@ -50,7 +48,7 @@ O projeto consiste em criar um backend para projetos e usuário que trabalham co
 ### Pré-requisitos
 
 Antes de começar, você vai precisar ter instalado em sua máquina as seguintes ferramentas:
-[RabbitMQ](https://www.rabbitmq.com/), [.Net core](https://dotnet.microsoft.com/en-us/download/dotnet/5.0).
+[.Net core](https://dotnet.microsoft.com/en-us/download/dotnet/5.0).
 Além disto é bom ter um editor para trabalhar com o código como [VSCode](https://code.visualstudio.com/), [Visuall Studio](https://visualstudio.microsoft.com/pt-br/downloads/)
 
 ## 🛠 Tecnologias
@@ -60,7 +58,6 @@ Além disto é bom ter um editor para trabalhar com o código como [VSCode](http
 - **[FluentValidation](https://fluentvalidation.net/)**
 - **[xUnit](https://xunit.net/)**
 - **[AzurePipelines](https://azure.microsoft.com/pt-br/services/devops/pipelines/)**
-- **[RabbitMQ](https://www.rabbitmq.com/)**
 
 
 
