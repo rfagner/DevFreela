@@ -27,7 +27,6 @@ O projeto consiste em criar um backend para projetos e usuário que trabalham co
 - FluentValidation
 - Testes unitários com xUnit
 - Azure Pipelines
-- RabbitMQ
 
 ---
 
