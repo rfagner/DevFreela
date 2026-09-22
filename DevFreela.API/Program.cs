@@ -5,7 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -15,6 +16,8 @@ if (app.Environment.IsDevelopment())
 {
     // Gera o JSON da spec em /openapi/v1.json
     app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 
     // UI do Scalar em /scalar/v1
     app.MapScalarApiReference();
